@@ -95,3 +95,8 @@
 
 - The cache is only stored in the memory. The cache will be empty after reboot.
 - The server handle requests in sequential way. That means ioloop or threading technique are not used. Since the DNS request will be sent for several times until the client gets the answer, multi-threading or ioloop are not needed for simplicity concern.
+
+
+#### Others
+
+ - DNS message: https://tools.ietf.org/html/rfc1035#section-4.1.1
