@@ -47,13 +47,13 @@
 
 ​		The query time is 293 msec for the first retrieve
 
-​		![1571025390088](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1571025390088.png)
+​		![1571025390088](../../archived/img/1571025390088.png)
 
 
 
 ​		The query time is 2 msec for the second retrieve
 
-​		![1571025437463](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1571025437463.png)
+​		![1571025437463](../../archived/img/1571025437463.png)
 
 ​		
 
@@ -65,7 +65,7 @@
 
 - For the windows users, find `使用下面的DNS服务器地址(E)` in `控制面板>所有控制面板项>网络连接>右击所用网络>属性>Internet协议版本4(TCP/IPv4)`, and fill the blank with your server's IP address:
 
-  ![1571029614944](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1571029614944.png)
+  ![1571029614944](../../archived/img/1571029614944.png)
 
 -  The cache will soon be filled with many queries and their answer.
 
@@ -83,7 +83,7 @@
 
 - If we turn off the server, the browser and the other network application are not working.
 
-  ![1571029897162](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1571029897162.png)
+  ![1571029897162](../../archived/img/1571029897162.png)
 
 
 
