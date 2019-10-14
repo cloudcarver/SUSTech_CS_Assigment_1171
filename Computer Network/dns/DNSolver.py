@@ -40,5 +40,7 @@ if __name__ == "__main__":
             udp_connection_DNS.sendto_server(message, Config.DNS_server_IPaddr, Config.DNS_server_Port) # Forward the query to the server
             message = udp_connection_DNS.blocked_recv() # Receive the response from the server
             dns_message.parse_dns(message) # parse
+            if Config.DEBUG:
+                print(dns_message)
             cache.append(search_key, message, dns_message.AnswerDict["Time_to_live"]) # cache the answer
             udp_connection_client.sendto(dns_message.changeTransactionID(cache.get(search_key), transaction_id)) # Guarantee consistency and send the answer to the client

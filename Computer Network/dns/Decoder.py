@@ -21,6 +21,9 @@ class DNSMessage:
         self.AnswerDict = {}
         self.AdditionalRecordsDict = {}
 
+    def __str__(self):
+        return "HeaderDict:{}\r\nQueriesDict:{}\r\nAnswerDict:{}\r\n".format(str(self.HeaderDict), str(self.QueriesDict), str(self.AnswerDict))
+
     # This is a tool function to replace the transaction ID of the answer
     # from the upper level DNS server before forwarding the answer to
     # the query process (client)
@@ -95,8 +98,8 @@ class DNSMessage:
         useless, \
         self.QueriesDict["Type"], self.QueriesDict["Class"]  = self.Struct.unpack_from(data)
 
-        # Only get the first answer
-        if self.HeaderDict["AnswerRRCnt"] > 0: # Get the first answer
+        # Only get the first answer or authority record
+        if self.HeaderDict["AnswerRRCnt"] > 0 or self.HeaderDict["AuthorityRRCnt"] > 0: # Get the first answer
             useless_len += 4
             self.struct_format = ">"+ str(useless_len) +"s" + "HHHI"
             self.Struct = struct.Struct(self.struct_format)
