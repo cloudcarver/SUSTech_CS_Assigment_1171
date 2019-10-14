@@ -39,13 +39,19 @@ class DNSMessage:
     # 2. QueriesDict : contains the domain name, class and type of the query
     # 3. AnswerDict  : contains the name, type, class and time-to-live of the answer
     #                  from the upper level DNS server.
-    def parse_dns(self, data, isAns):
+    def parse_dns(self, data):
         self.struct_format = ">6H1B"
         self.Struct = struct.Struct(self.struct_format)
-        self.HeaderDict["TransactionID"], Flags, self.HeaderDict["self.QuestionCnt"], self.HeaderDict["self.AnswerRRCnt"], \
-        self.HeaderDict["AuthorityRRCnt"], self.HeaderDict["AdditionalRRCnt"], \
+
+        self.HeaderDict["TransactionID"], \
+        Flags, \
+        self.HeaderDict["QuestionCnt"], \
+        self.HeaderDict["AnswerRRCnt"], \
+        self.HeaderDict["AuthorityRRCnt"], \
+        self.HeaderDict["AdditionalRRCnt"], \
         next_len = self.Struct.unpack_from(data)
 
+        # Decode Flags
         self.HeaderDict["Response"] = (Flags & 0x8000) != 0
         self.HeaderDict["OpCode"] = (Flags & 0x7800)
         self.HeaderDict["AA"] = (Flags & 0x0400) != 0
@@ -89,9 +95,8 @@ class DNSMessage:
         useless, \
         self.QueriesDict["Type"], self.QueriesDict["Class"]  = self.Struct.unpack_from(data)
 
-        # The next part may be empty or additional records for a query. But it will be an answer if the
-        # dns message is from the upper level DNS server.
-        if isAns:
+        # Only get the first answer
+        if self.HeaderDict["AnswerRRCnt"] > 0: # Get the first answer
             useless_len += 4
             self.struct_format = ">"+ str(useless_len) +"s" + "HHHI"
             self.Struct = struct.Struct(self.struct_format)

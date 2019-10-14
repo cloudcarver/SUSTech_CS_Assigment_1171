@@ -13,7 +13,7 @@ if __name__ == "__main__":
         """
         dns_message = DNSMessage() 
         message = udp_connection_client.blocked_recv() # Get message from the client
-        dns_message.parse_dns(message, isAns=False) # Parse the message received
+        dns_message.parse_dns(message) # Parse the message received
         search_key = (dns_message.QueriesDict["domain_name"], dns_message.QueriesDict["Type"]) # the search key is for query the cache: qname and qtype
         transaction_id = dns_message.HeaderDict["TransactionID"] # The transaction ID of the query from client
 
@@ -39,6 +39,6 @@ if __name__ == "__main__":
             udp_connection_DNS = UDPConnection(Config.VERBOSE) # Connect to the upper level server
             udp_connection_DNS.sendto_server(message, Config.DNS_server_IPaddr, Config.DNS_server_Port) # Forward the query to the server
             message = udp_connection_DNS.blocked_recv() # Receive the response from the server
-            dns_message.parse_dns(message, isAns=True) # parse
+            dns_message.parse_dns(message) # parse
             cache.append(search_key, message, dns_message.AnswerDict["Time_to_live"]) # cache the answer
             udp_connection_client.sendto(dns_message.changeTransactionID(cache.get(search_key), transaction_id)) # Guarantee consistency and send the answer to the client
