@@ -1,6 +1,6 @@
 # Runtime settings #
 VERBOSE = True
-DEBUG = False
+DEBUG = True
 
 
 # Basic settings #
