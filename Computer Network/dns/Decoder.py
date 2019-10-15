@@ -9,7 +9,7 @@ def parse_domain_name_list(domain_name_list):
         return "0"
     domain_name = ""
     for i in range(0, len(domain_name_list)):
-        domain_name += str(domain_name_list[i].decode())
+        domain_name += str(domain_name_list[i])
         if(i != len(domain_name_list) - 1):
             domain_name += "."
     return domain_name
@@ -85,6 +85,7 @@ class DNSMessage:
     # 2. QueriesDict : contains the domain name, class and type of the query
     # 3. AnswerDict  : contains the name, type, class and time-to-live of the answer
     #                  from the upper level DNS server.
+
     def parse_dns(self, data):
         self.packetiterator = Util.PacketIterator(data, endian=">")
 
@@ -122,20 +123,15 @@ class DNSMessage:
         """
         for i in range(0, self.Header.QuestionCnt):
             self.QueriesList.append(Query())
-            query_len = 0
 
             domain_name_list = []
             segment_index = 0
             useless, next_len = self.packetiterator.next("B", 1)
-            query_len += 1
             while next_len != 0:
-                if Config.DEBUG:
-                    print("in loop")
                 domain_name_list.append("")
 
                 useless, \
                 domain_name_list[segment_index], next_len = self.packetiterator.next(str(next_len) + "s" + "B", (next_len+1))
-                query_len += next_len + 1
 
                 segment_index += 1
 
@@ -144,13 +140,9 @@ class DNSMessage:
             # Get the type and class of the query.
             useless, \
             self.QueriesList[i].QTYPE, self.QueriesList[i].CLASS = self.packetiterator.next("HH", 4)      
-            query_len += 4
-            self.QueriesList[i].length = query_len
 
         if Config.VERBOSE:
             for i in range(0, self.Header.QuestionCnt):
-                if Config.DEBUG:
-                    print("in loop")
                 print(self.QueriesList[i])
 
         # Only get the smallest ttl of all RRs
@@ -159,51 +151,36 @@ class DNSMessage:
             print("Number of Resource Record:",RRsCNT)
         for i in range (0, RRsCNT):
             self.RRsList.append(RescourceRecord())
-            rr_len = 0
 
             domain_name_list = []
             segment_index = 0
             useless, next_len = self.packetiterator.next("B", 1)
-            rr_len += 1
 
-            if(next_len >= 192): # the domain name is represented by a pointer
-                useless, \
-                pointer = self.packetiterator.next("B", 1)
-                rr_len += 1
-                self.RRsList[i].NAME = "pointer:" + str(pointer)
-            else:
-           
-                while next_len != 0:
-                    if Config.DEBUG:
-                        print("in loop")
-                    domain_name_list.append("")
+            while next_len != 0:
+                domain_name_list.append("")
 
-                    useless, domain_name_list[segment_index], next_len = self.packetiterator.next(str(next_len) + "s" + "B", (next_len+1))
-                    rr_len += next_len + 1
-
+                if next_len >= 192: # the domain name is represented by a pointer
+                    useless, domain_name_list[segment_index] = self.packetiterator.next("B", 1)
                     segment_index += 1
+                    next_len = 0 # If there is a pointer, then it is the end of the name.
+                else:
+                    useless, domain_name_list[segment_index] = self.packetiterator.next(str(next_len) + "s" , next_len)
+                    segment_index += 1
+                    useless, next_len = self.packetiterator.next("B", 1)
 
-                self.RRsList[i].NAME = parse_domain_name_list(domain_name_list)
+            self.RRsList[i].NAME = parse_domain_name_list(domain_name_list)
 
             useless, \
             self.RRsList[i].TYPE,\
             self.RRsList[i].CLASS, \
             self.RRsList[i].TTL,\
             self.RRsList[i].RDLENGTH = self.packetiterator.next("HHIH", 10)
-            rr_len += 10
 
             useless, \
             self.RRsList[i].RDATA = self.packetiterator.next(str(self.RRsList[i].RDLENGTH) + "s", self.RRsList[i].RDLENGTH)
-            rr_len += self.RRsList[i].RDLENGTH
-
-            self.RRsList[i].length = rr_len
 
             # Get the smallest TTL
             if(self.RRsList[i].TTL > 0 and self.minTTL > self.RRsList[i].TTL):
                 self.minTTL = self.RRsList[i].TTL
-
-        if Config.VERBOSE:
-            for i in range(0, RRsCNT):
-                if Config.DEBUG:
-                    print("in loop")
+            if Config.VERBOSE:
                 print(self.RRsList[i])

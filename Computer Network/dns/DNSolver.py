@@ -12,7 +12,10 @@ if __name__ == "__main__":
         Receive query from client
         """
         dns_message = DNSMessage() 
-        message = udp_connection_client.blocked_recv() # Get message from the client
+        try:
+            message = udp_connection_client.blocked_recv() # Get message from the client
+        except ConnectionResetError:
+            continue
         dns_message.parse_dns(message) # Parse the message received
         search_key = (dns_message.QueriesList[0].QNAME, dns_message.QueriesList[0].QTYPE) # the search key is for query the cache: qname and qtype
         transaction_id = dns_message.Header.TransactionID # The transaction ID of the query from client
@@ -31,14 +34,17 @@ if __name__ == "__main__":
             udp_connection_client.sendto(dns_message.changeTransactionID(cache_msg, transaction_id)) # Send the answer to the client directly
             continue
         else: # The answer is not found or out of date
-            if Config.VERBOSE: 
+            if Config.VERBOSE:
                 print("Cache miss :", cache_msg)
             """
             Forward query to upper level DNS sever
             """
             udp_connection_DNS = UDPConnection() # Connect to the upper level server
             udp_connection_DNS.sendto_server(message, Config.DNS_server_IPaddr, Config.DNS_server_Port) # Forward the query to the server
-            message = udp_connection_DNS.blocked_recv() # Receive the response from the server
+            try:
+                message = udp_connection_DNS.blocked_recv() # Receive the response from the server
+            except ConnectionResetError:
+                continue
             dns_message.parse_dns(message) # parse
             if Config.VERBOSE:
                 print("This smallest TTL is:", dns_message.minTTL)

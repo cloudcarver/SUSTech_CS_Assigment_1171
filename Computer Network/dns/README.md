@@ -61,6 +61,16 @@
 
 
 
+#### Wireshark Test
+
+The pointer is not interpreted since the cache doesn't need this information. The TTLs are same with the TTLs in wireshark.
+
+![1571135704751](../../archived/img/1571135704751.png)
+
+
+
+
+
 #### Global Test
 
 - For the windows users, find `使用下面的DNS服务器地址(E)` in `控制面板>所有控制面板项>网络连接>右击所用网络>属性>Internet协议版本4(TCP/IPv4)`, and fill the blank with your server's IP address:

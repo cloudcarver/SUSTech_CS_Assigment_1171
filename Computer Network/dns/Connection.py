@@ -16,7 +16,10 @@ class UDPConnection(object):
             print("UDP connection is set up.")
 
     # Receive the message from the client side in blocked way
-    def blocked_recv(self):
+    def blocked_recv(self, trials=3):
+        if trials == 0:
+            print("Try 3 times. Give up.")
+            raise ConnectionResetError
         try:
             message, self.address = self.socket.recvfrom(self.UDP_RECV_BUF)
             if Config.VERBOSE:
@@ -27,7 +30,8 @@ class UDPConnection(object):
             time.sleep(10)
             if Config.VERBOSE:
                 print("Too frequent connection, try again...")
-            return self.blocked_recv()
+            
+            return self.blocked_recv(trials - 1)
         
         return message
     
