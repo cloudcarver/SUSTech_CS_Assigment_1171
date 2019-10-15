@@ -1,5 +1,9 @@
 ## Simple Local DNS Resolver
 
+#### Source:
+
+[https://github.com/mikechesterwang/SUSTech_CS_Assigment_1171/tree/master/Computer%20Network/dns](https://github.com/mikechesterwang/SUSTech_CS_Assigment_1171/tree/master/Computer Network/dns)
+
 #### Set up
 
 - Open `config.php` to set up server IP, the IP address of the upper level DNS server. The port number is always 53 for DNS server. 
@@ -40,7 +44,7 @@
 - Use dig to test the local resolver
 
   ```bash
-  $ dig @127.0.0.1 baidu.com
+  $ dig @127.0.0.1 baidu.com +noedns
   ```
 
   *note : the server IP is 127.0.0.1 in this example*
@@ -98,6 +102,8 @@ The pointer is not interpreted since the cache doesn't need this information. Th
 
 
 #### Feature
+
+- EDNS is not supported for now.
 
 - Only UDP is used.
 

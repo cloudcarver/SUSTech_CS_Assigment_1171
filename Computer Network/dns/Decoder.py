@@ -55,18 +55,6 @@ class DNSMessage:
     def __str__(self):
         return "{}\r\n{}\r\n{}\r\n".format(str(self.Header), str(self.QueriesList), str(self.RRsList))
 
-    # def toCachedByteStream(self):
-    #     struct_format = ">" + self.Header.length + "s" + ()
-    #     cached_rr_flag_list = []
-    #     for rr in self.RRsList:
-    #         if(rr.TTL > 0):
-    #             cached_rr_flag_list.append(1)
-    #         else:
-    #             cached_rr_flag_list.append(0)
-
-    #     byte_tuple = 
-        
-
     # This is a tool function to replace the transaction ID of the answer
     # from the upper level DNS server before forwarding the answer to
     # the query process (client)
@@ -180,7 +168,7 @@ class DNSMessage:
             self.RRsList[i].RDATA = self.packetiterator.next(str(self.RRsList[i].RDLENGTH) + "s", self.RRsList[i].RDLENGTH)
 
             # Get the smallest TTL
-            if(self.RRsList[i].TTL > 0 and self.minTTL > self.RRsList[i].TTL):
+            if(self.minTTL > self.RRsList[i].TTL):
                 self.minTTL = self.RRsList[i].TTL
             if Config.VERBOSE:
                 print(self.RRsList[i])

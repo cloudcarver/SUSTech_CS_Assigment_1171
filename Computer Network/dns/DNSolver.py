@@ -29,12 +29,12 @@ if __name__ == "__main__":
             print("Cache: {}".format(cache.itemdict.keys()))
         cache_msg = cache.get(search_key) # Find the answer in the cache
         if cache_msg != Cache.ANSWER_EXPIRE and cache_msg != Cache.ANSWER_NOT_FOUND: # The answer is in the cache and it is not out of date
-            if Config.VERBOSE:
+            if Config.CACHE_VERBOSE:
                 print("Cache hit.")
             udp_connection_client.sendto(dns_message.changeTransactionID(cache_msg, transaction_id)) # Send the answer to the client directly
             continue
         else: # The answer is not found or out of date
-            if Config.VERBOSE:
+            if Config.CACHE_VERBOSE:
                 print("Cache miss :", cache_msg)
             """
             Forward query to upper level DNS sever
@@ -49,4 +49,4 @@ if __name__ == "__main__":
             if Config.VERBOSE:
                 print("This smallest TTL is:", dns_message.minTTL)
             cache.append(search_key, message, dns_message.minTTL) # cache the answer
-            udp_connection_client.sendto(dns_message.changeTransactionID(cache.get(search_key), transaction_id)) # Guarantee consistency and send the answer to the client4
+            udp_connection_client.sendto(dns_message.changeTransactionID(message, transaction_id)) # Send the answer to the client
