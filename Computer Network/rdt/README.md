@@ -10,8 +10,6 @@ loss_rate=0.2, corruption_rate=0.2, delay_rate=0.2, delay=1
 
 Manually send characters to the server and server will echo it back.
 
-![1573574955729](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1573574955729.png)
-
 
 
 Go to Config.py and set **DEBUG = True**, you can see the details of the transmission. 
@@ -61,8 +59,6 @@ RFT_WINDOW_SIZE = 10
 If you want to see the details of the transmission, set **DEBUG = True**.
 
 If **VERBOSE** is True, you can see the connection information
-
-![1573538553960](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1573538553960.png)
 
 The **Segment size** should less than MSS - len(max_header) = 1448 bytes. The recommended value is **1024**.
 
