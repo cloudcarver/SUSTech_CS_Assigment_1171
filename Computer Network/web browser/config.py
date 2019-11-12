@@ -1,0 +1,6 @@
+HOST = '127.0.0.1'
+PORT = 8080
+ENABLE_RANGE_HEADER = True
+VERBOSE = True
+DEBUG = False
+HTTP = 1.1
