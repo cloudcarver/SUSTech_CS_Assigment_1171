@@ -53,7 +53,7 @@ DEFAULT_CODING = 'utf-8'
 # timeout
 RDT_TIMEOUT = 1.5
 RDT_TIMROUT_CHECKING_TIME = 0.1
-RFT_WINDOW_SIZE = 10
+RDT_WINDOW_SIZE = 10
 ```
 
 If you want to see the details of the transmission, set **DEBUG = True**.
