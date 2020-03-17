@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -40,7 +41,8 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
     }
 
     private void updateLastAccessTime(String name){
-        lastAccessedLog.put(name, System.currentTimeMillis());
+    	long currentTime = System.currentTimeMillis();
+        lastAccessedLog.put(name, currentTime);
     }
 
     /**
@@ -115,7 +117,7 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
         StringBuilder sb = new StringBuilder();
         try{
             while( (line = buf.readLine()) != null){
-                sb.append(line);
+                sb.append(line + "\n");
             }
         }catch(IOException io){
             buf.close();
@@ -130,16 +132,17 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
     public void create(String fileName) throws Exception {
         File file = new File(fileName);
         if(file.exists()){
-            throw new Exception("File already exists.");
+            throw new Exception("File already exists: " + fileName);
         }else{
             file.createNewFile();
         }
+        updateLastAccessTime(fileName);
     }
 
     public void edit(String fileName, boolean append, String newContent) throws FileNotFoundException, IOException {
         File file = new File(fileName);
         if( ! file.exists()){
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("No such file: " + fileName);
         }
 
         FileOutputStream fos = null;
@@ -148,8 +151,9 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
             fos.write(newContent.getBytes());
         }catch(IOException ie){
             fos.close();
-            throw ie;
+            throw new IOException("Something went wrong while writing the file");
         }
+        updateLastAccessTime(fileName);
         fos.close();
     }
 
@@ -164,7 +168,7 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
         String line = null;
         try{
             while((line = buf.readLine()) != null){
-                sb.append(line);
+                sb.append(line + "\n");
             }
         }catch(IOException ie){
             buf.close();
@@ -184,7 +188,7 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
     public void move(String sourceFileName , String destinationFileName) throws IOException, FileNotFoundException {
         File srcFile = new File(sourceFileName);
         if( ! srcFile.exists() ){
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("No such file: " + srcFile.getName());
         }
         srcFile.renameTo(new File(destinationFileName));
     }
@@ -192,7 +196,7 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
     public long size(String fileName) throws FileNotFoundException {
         File file = new File(fileName);
         if( ! file.exists() ){
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("No such file: " + fileName);
         }
         return file.length();
     } // returns size in bytes
@@ -200,13 +204,25 @@ public class FileServer extends UnicastRemoteObject implements IFileServer{
     public long lastModified(String fileName) throws FileNotFoundException {
         File file = new File(fileName);
         if( ! file.exists() ){
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("No such file: " + fileName);
         }
         return file.lastModified();
     }// returns timestamp
 
     public long lastAccessed(String fileName) throws FileNotFoundException {
-        return 0;
+    	File file = new File(fileName);
+        if( ! file.exists() ){
+            throw new FileNotFoundException("No such file: " + fileName);
+        }
+    	return lastAccessedLog.get(fileName);
     } // returns timestamp
+    
+    public String list() throws RemoteException{
+    	StringBuilder sb = new StringBuilder();
+    	for(String name : new File("./").list()) {
+    		sb.append(name + " ");
+    	}
+    	return sb.toString();
+    }
 }
 

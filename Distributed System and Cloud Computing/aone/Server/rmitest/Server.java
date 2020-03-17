@@ -21,7 +21,8 @@ public class Server{
 
     public static void main(String[] args) throws RemoteException{
         Server server = new Server(51800);
-        server.addFileSystemInstance("test1");
+        server.addFileSystemInstance("remoteFileServer");
         System.out.println("Server is listening.");
+        
     }
 }
