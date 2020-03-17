@@ -7,7 +7,6 @@ import java.util.Scanner;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-
 class Command{
 	
 	private String[] args;
@@ -55,19 +54,41 @@ class Command{
 		}
 		
 	}
-	
+	/**
+	 * Get the all the options in the command.
+	 * @return the map contains all the options pair.
+	 */
 	public HashMap<String, String> getOptions(){
 		return options;
 	}
 	
+
+	/**
+	 * Get an argument in this command
+	 * @param index the order number of this argument
+	 * @return the string representation of this argument
+	 */
 	public String getArg(int index) {
 		return args[index];
 	}
 	
+	/**
+	 * Get an option value in this command.
+	 * An option pair is constructed like this:
+	 * time -a t.txt
+	 * <"-a", "t.txt">
+	 * @param key the option
+	 * @return the value of this option
+	 */
 	public String getOption(String key) {
 		return options.get(key);
 	}
 	
+	/**
+	 * The service called in this command. For example,
+	 * for the command `time -a t.txt`, the service is "time"
+	 * @return the service of the command required
+	 */
 	public String getCommand() {
 		return command;
 	}
@@ -81,6 +102,13 @@ public class Client {
     private Registry registry;
     private IFileServer fileSystem;
 
+	/**
+	 * Construct a client connected to the remote server providing remote method 
+	 * innvocation services.
+	 * 
+	 * @param host the address of the server
+	 * @param port the port of the server opened for RMI service
+	 */
     public Client(String host, int port){
         try{
             registry = LocateRegistry.getRegistry(host, port);
@@ -90,6 +118,12 @@ public class Client {
         fileSystem = getFileSystem("remoteFileServer");
     }
 
+	/**
+	 * Get an remote object instance via lookup method
+	 * 
+	 * @param objectName the name of the remote object registed in the registry. 
+	 * @return the remote reference or null if the name is incorrect.
+	 */
     public IFileServer getFileSystem(String objectName){
         try{
             return (IFileServer) registry.lookup(objectName);
@@ -98,7 +132,10 @@ public class Client {
         }
         return null;
     }
-    
+	/**
+	 * Read the content of a file to standard output
+	 * @param fileName the name of the file you want to read
+	 */
     public void read(String fileName) {
     	try {
     		System.out.println(fileSystem.read(fileName));
@@ -106,7 +143,11 @@ public class Client {
     		System.out.println(e.getMessage());
     	}
     }
-    
+	
+	/**
+	 * Create a file in the remote server
+	 * @param fileName the name of the file created
+	 */
     public void create(String fileName) {
     	try {
     		fileSystem.create(fileName);
@@ -114,7 +155,14 @@ public class Client {
     		System.out.println(e.getMessage());
     	}
     }
-    
+	
+	/**
+	 * Edit a file in the remote server.
+	 * @param fileName the name of the file edited
+	 * @param append true if you want to append the content to the original content.
+	 *               false if you want to replace the original content by the new content.
+	 * @param newContent the content you want to write to the file
+	 */
     public void edit(String fileName, boolean append, String newContent) {
     	try {
     		fileSystem.edit(fileName, append, newContent);
@@ -122,7 +170,11 @@ public class Client {
     		System.out.println(e.getMessage());
     	}
     }
-    
+	
+	/**
+	 * delete a file in remote server
+	 * @param fileName the name of the file you want to delete
+	 */
     public void delete(String fileName) {
     	try {
     		fileSystem.delete(fileName);
@@ -130,42 +182,72 @@ public class Client {
     		System.out.println(e.getMessage());
     	}
     }
-    
+	
+	/**
+	 * Copy a file in the remote server to another place in the remote server.
+	 * @param sourceFileName the name of the file you copy from
+	 * @param destinationFileName the name of the file you paste to
+	 */
     public void copy(String sourceFileName, String destinationFileName) {
     	try {
     		fileSystem.copy(sourceFileName, destinationFileName);
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
     	}
-    }
+	}
+	
+	/**
+	 * Rename a file in the remote server.
+	 * @param sourceFileName the orginal name
+	 * @param destinationFileName the name you want to rename to
+	 */
     public void move(String sourceFileName, String destinationFileName) {
     	try {
     		fileSystem.move(sourceFileName, destinationFileName);
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
     	}
-    }
+	}
+	
+	/**
+	 * Print to size (length) of a file in the remote server in bytes to standard output
+	 * @param fileName the name of the file you want to know its size
+	 */
     public void size(String fileName) {
     	try {
     		System.out.println(fileSystem.size(fileName) + "bytes");
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
     	}
-    }
+	}
+	
+	/**
+	 * Print the datetime of the last modified time of a file
+	 * @param fileName the name of the file you want to know its last modified time
+	 */
     public void lastModified(String fileName) {
     	try {
     		System.out.println(new Date(fileSystem.lastModified(fileName)));
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
     	}
-    }
+	}
+	
+	/**
+	 * Print the datetime of the last accessed time of a file
+	 * @param fileName the name of the file you want to know its last accessed time
+	 */
     public void lastAccessed(String fileName) {
     	try {
     		System.out.println(new Date(fileSystem.lastAccessed(fileName)));
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
     	}
-    }
+	}
+	
+	/**
+	 * Print all the names of the files in the remote server to the standard output.
+	 */
     public void list() {
     	try {
 			System.out.println(fileSystem.list());
@@ -174,6 +256,11 @@ public class Client {
 		}
     }
 
+	/**
+	 * Handle user's input
+	 * @param comm the Command object constructed from user's input
+	 * @return false if user's input is `exit`; otherwise, it always be true.
+	 */
     public boolean handleCommand(Command comm) {
     	String command = comm.getCommand();
     	if(command.equals("cat")) {
