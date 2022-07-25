@@ -1,0 +1,5 @@
+DEBUG = True
+VERBOSE = True
+SAVE_FILE = True
+EPOCH = 1e4
+LEARNING_RATE = 1e-2
