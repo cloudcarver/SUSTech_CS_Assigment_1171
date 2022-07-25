@@ -1,0 +1,5 @@
+Task 1. Log in as root
+Task 2. Make a directory “StudentID”, finish your tasks in this directory
+Task 3. Modify the source code according to the requirements of the experimental instructions, compile and run each program
+Task 4. Observe the results  
+

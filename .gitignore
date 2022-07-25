@@ -2,3 +2,8 @@
 *.pdf
 __pycache__/**
 **/__pycache__/**
+*.pptx
+*.rar
+*.ppt
+*.word
+*.wordx
